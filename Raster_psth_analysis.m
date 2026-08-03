@@ -1,10 +1,11 @@
+% This code is compatible with GNU Octave.
 clear all; close all; clc;
 
-%% ¼ÓÔØÊı¾İ
+%% åŠ è½½æ•°æ®
 data_mat_file = 'E:\Github\2\Raster_psth_analysis_example.mat';
 load(data_mat_file);
 
-%% ²ÎÊıÉèÖÃ
+%% å‚æ•°è®¾ç½®
 params = struct();
 params.Pre_Axis_Time = 0.15;       
 params.Post_Axis_Time = 0.75;      
@@ -12,14 +13,14 @@ params.Response_Window = [0, 0.6];
 params.max_trials_per_raster = 60; 
 
 %%
-fig1 = figure('Position', [100, 100, 1400, 800], 'Name', 'ÁùÖÖ´Ì¼¤ÀàĞÍµş¼ÓPSTHÇúÏß');
+fig1 = figure('Position', [100, 100, 1400, 800], 'Name', 'å…­ç§åˆºæ¿€ç±»å‹å åŠ PSTHæ›²çº¿');
 hold on;
 
 colors = lines(6);
 y_offsets = zeros(1, 6); 
 max_rates = zeros(1, 6);
 
-% ¼ÆËãÃ¿¸ö´Ì¼¤ÀàĞÍµÄ×î´ó·ÅµçÂÊ
+% è®¡ç®—æ¯ä¸ªåˆºæ¿€ç±»å‹çš„æœ€å¤§æ”¾ç”µç‡
 for stim_type = 1:6
     if frequency_results(stim_type).trial_count > 0
         psth_rate = frequency_results(stim_type).psth_rate;
@@ -29,7 +30,7 @@ for stim_type = 1:6
     end
 end
 
-% ¼ÆËãÆ«ÒÆÁ¿£¬Ê¹ÇúÏßÉÏÏÂ¶Ñµş
+% è®¡ç®—åç§»é‡ï¼Œä½¿æ›²çº¿ä¸Šä¸‹å †å 
 base_offset = 0;
 for stim_type = 1:6
     if max_rates(stim_type) > 0
@@ -41,7 +42,7 @@ total_height = base_offset;
 
 legend_handles = []; legend_labels = {};
 
-% »æÖÆÃ¿ÌõPSTHÇúÏß
+% ç»˜åˆ¶æ¯æ¡PSTHæ›²çº¿
 for stim_type = 1:6
     if frequency_results(stim_type).trial_count > 0
         psth_time = frequency_results(stim_type).psth_time;
@@ -56,7 +57,7 @@ for stim_type = 1:6
     end
 end
 
-% Ìí¼Ó·Ö¸ôĞéÏß
+% æ·»åŠ åˆ†éš”è™šçº¿
 for stim_type = 1:5
     if max_rates(stim_type) > 0 && max_rates(stim_type+1) > 0
         separator_y = y_offsets(stim_type) + max_rates(stim_type) * 1.15;
@@ -71,8 +72,8 @@ plot([0.5, 0.5], [0, total_height], 'r--', 'LineWidth', 2);
 fill([params.Response_Window(1), params.Response_Window(2), params.Response_Window(2), params.Response_Window(1)], ...
     [0, 0, total_height, total_height], [1, 1, 0.8], 'FaceAlpha', 0.15, 'EdgeColor', 'none');
 
-xlabel('Ê±¼ä (s)', 'FontSize', 12, 'FontWeight', 'bold');
-ylabel('´Ì¼¤ÆµÂÊ (Hz)', 'FontSize', 12, 'FontWeight', 'bold');
+xlabel('æ—¶é—´ (s)', 'FontSize', 12, 'FontWeight', 'bold');
+ylabel('åˆºæ¿€é¢‘ç‡ (Hz)', 'FontSize', 12, 'FontWeight', 'bold');
 xlim([-params.Pre_Axis_Time, params.Post_Axis_Time + 0.3]);
 ylim([0, total_height]);
 grid on;
@@ -93,17 +94,17 @@ set(gca, 'YTickLabel', yticks_labels);
 if ~isempty(legend_handles)
     legend(legend_handles, legend_labels, 'Location', 'northeast', 'FontSize', 10, 'Box', 'off');
 end
-title('ÁùÖÖ´Ì¼¤ÀàĞÍµş¼ÓPSTHÇúÏß', 'FontSize', 14, 'FontWeight', 'bold');
+title('å…­ç§åˆºæ¿€ç±»å‹å åŠ PSTHæ›²çº¿', 'FontSize', 14, 'FontWeight', 'bold');
 
 
 %% 
-fig2 = figure('Position', [150, 150, 1400, 800], 'Name', 'ÁùÖÖ´Ì¼¤ÀàĞÍµş¼Ó¹âÕ¤Í¼');
+fig2 = figure('Position', [150, 150, 1400, 800], 'Name', 'å…­ç§åˆºæ¿€ç±»å‹å åŠ å…‰æ …å›¾');
 hold on;
 
 total_trials_displayed = 0;
 y_positions = struct();
 
-% ¼ÆËãÃ¿¸ö´Ì¼¤ÀàĞÍµÄÏÔÊ¾ĞĞ·¶Î§
+% è®¡ç®—æ¯ä¸ªåˆºæ¿€ç±»å‹çš„æ˜¾ç¤ºè¡ŒèŒƒå›´
 for stim_type = 1:6
     if frequency_results(stim_type).trial_count > 0 && isfield(frequency_results(stim_type), 'raster_data')
         raster_data = frequency_results(stim_type).raster_data;
@@ -119,7 +120,7 @@ for stim_type = 1:6
     end
 end
 
-% »æÖÆ¹âÕ¤Í¼
+% ç»˜åˆ¶å…‰æ …å›¾
 for stim_type = 1:6
     if y_positions(stim_type).count > 0
         trial_spike_times = frequency_results(stim_type).raster_data.trial_spike_times;
@@ -137,7 +138,7 @@ for stim_type = 1:6
             end
         end
         
-        % ×é¼ä·Ö¸ôÏß
+        % ç»„é—´åˆ†éš”çº¿
         if stim_type < 6 && y_positions(stim_type+1).count > 0
             plot([-params.Pre_Axis_Time, params.Post_Axis_Time], ...
                 [y_positions(stim_type).end + 0.5, y_positions(stim_type).end + 0.5], 'k-', 'LineWidth', 2);
@@ -153,8 +154,8 @@ plot([0.5, 0.5], [0, y_max], 'r--', 'LineWidth', 2);
 fill([params.Response_Window(1), params.Response_Window(2), params.Response_Window(2), params.Response_Window(1)], ...
     [0, 0, y_max, y_max], [1, 1, 0.8], 'FaceAlpha', 0.15, 'EdgeColor', 'none');
 
-xlabel('Ê±¼ä (s)', 'FontSize', 12, 'FontWeight', 'bold');
-ylabel('´Ì¼¤ÆµÂÊ (Hz)', 'FontSize', 12, 'FontWeight', 'bold');
+xlabel('æ—¶é—´ (s)', 'FontSize', 12, 'FontWeight', 'bold');
+ylabel('åˆºæ¿€é¢‘ç‡ (Hz)', 'FontSize', 12, 'FontWeight', 'bold');
 xlim([-params.Pre_Axis_Time, params.Post_Axis_Time + 0.5]);
 ylim([0, y_max]);
 grid on;
@@ -171,4 +172,4 @@ end
 set(gca, 'YTick', yticks_pos);
 set(gca, 'YTickLabel', yticks_labels);
 
-title('ÁùÖÖ´Ì¼¤ÀàĞÍµş¼Ó¹âÕ¤Í¼', 'FontSize', 14, 'FontWeight', 'bold');
+title('å…­ç§åˆºæ¿€ç±»å‹å åŠ å…‰æ …å›¾', 'FontSize', 14, 'FontWeight', 'bold');
