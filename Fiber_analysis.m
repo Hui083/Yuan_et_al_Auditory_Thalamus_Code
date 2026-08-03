@@ -1,3 +1,4 @@
+% This code is compatible with GNU Octave.
 close all; clear; clc;
 
 %% 
