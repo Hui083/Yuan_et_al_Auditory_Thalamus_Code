@@ -1,0 +1,174 @@
+clear all; close all; clc;
+
+%% 加载数据
+data_mat_file = 'E:\Github\2\Raster_psth_analysis_example.mat';
+load(data_mat_file);
+
+%% 参数设置
+params = struct();
+params.Pre_Axis_Time = 0.15;       
+params.Post_Axis_Time = 0.75;      
+params.Response_Window = [0, 0.6]; 
+params.max_trials_per_raster = 60; 
+
+%%
+fig1 = figure('Position', [100, 100, 1400, 800], 'Name', '六种刺激类型叠加PSTH曲线');
+hold on;
+
+colors = lines(6);
+y_offsets = zeros(1, 6); 
+max_rates = zeros(1, 6);
+
+% 计算每个刺激类型的最大放电率
+for stim_type = 1:6
+    if frequency_results(stim_type).trial_count > 0
+        psth_rate = frequency_results(stim_type).psth_rate;
+        if ~isempty(psth_rate)
+            max_rates(stim_type) = max(psth_rate);
+        end
+    end
+end
+
+% 计算偏移量，使曲线上下堆叠
+base_offset = 0;
+for stim_type = 1:6
+    if max_rates(stim_type) > 0
+        y_offsets(stim_type) = base_offset;
+        base_offset = base_offset + max_rates(stim_type) * 1.3;
+    end
+end
+total_height = base_offset;
+
+legend_handles = []; legend_labels = {};
+
+% 绘制每条PSTH曲线
+for stim_type = 1:6
+    if frequency_results(stim_type).trial_count > 0
+        psth_time = frequency_results(stim_type).psth_time;
+        psth_rate = frequency_results(stim_type).psth_rate;
+        
+        if ~isempty(psth_time)
+            shifted_rate = psth_rate + y_offsets(stim_type);
+            h = plot(psth_time, shifted_rate, 'Color', colors(stim_type, :), 'LineWidth', 2.5);
+            legend_handles(end+1) = h;
+            legend_labels{end+1} = sprintf('%s (n=%d)', frequency_results(stim_type).frequency_label, frequency_results(stim_type).trial_count);
+        end
+    end
+end
+
+% 添加分隔虚线
+for stim_type = 1:5
+    if max_rates(stim_type) > 0 && max_rates(stim_type+1) > 0
+        separator_y = y_offsets(stim_type) + max_rates(stim_type) * 1.15;
+        plot([-params.Pre_Axis_Time, params.Post_Axis_Time], [separator_y, separator_y], 'k-', 'LineWidth', 1.5, 'LineStyle', '--');
+    end
+end
+
+
+plot([0, 0], [0, total_height], 'r--', 'LineWidth', 2);
+plot([0.5, 0.5], [0, total_height], 'r--', 'LineWidth', 2);
+
+fill([params.Response_Window(1), params.Response_Window(2), params.Response_Window(2), params.Response_Window(1)], ...
+    [0, 0, total_height, total_height], [1, 1, 0.8], 'FaceAlpha', 0.15, 'EdgeColor', 'none');
+
+xlabel('时间 (s)', 'FontSize', 12, 'FontWeight', 'bold');
+ylabel('刺激频率 (Hz)', 'FontSize', 12, 'FontWeight', 'bold');
+xlim([-params.Pre_Axis_Time, params.Post_Axis_Time + 0.3]);
+ylim([0, total_height]);
+grid on;
+set(gca, 'FontSize', 11, 'GridAlpha', 0.3);
+
+yticks_pos = [];
+yticks_labels = {};
+for stim_type = 1:6
+    if frequency_results(stim_type).trial_count > 0 && max_rates(stim_type) > 0
+        center_y = y_offsets(stim_type) + max_rates(stim_type)/2;
+        yticks_pos = [yticks_pos, center_y];
+        yticks_labels{end+1} = frequency_results(stim_type).frequency_label;
+    end
+end
+set(gca, 'YTick', yticks_pos);
+set(gca, 'YTickLabel', yticks_labels);
+
+if ~isempty(legend_handles)
+    legend(legend_handles, legend_labels, 'Location', 'northeast', 'FontSize', 10, 'Box', 'off');
+end
+title('六种刺激类型叠加PSTH曲线', 'FontSize', 14, 'FontWeight', 'bold');
+
+
+%% 
+fig2 = figure('Position', [150, 150, 1400, 800], 'Name', '六种刺激类型叠加光栅图');
+hold on;
+
+total_trials_displayed = 0;
+y_positions = struct();
+
+% 计算每个刺激类型的显示行范围
+for stim_type = 1:6
+    if frequency_results(stim_type).trial_count > 0 && isfield(frequency_results(stim_type), 'raster_data')
+        raster_data = frequency_results(stim_type).raster_data;
+        display_trials = min(params.max_trials_per_raster, length(raster_data.trial_spike_times));
+        y_positions(stim_type).start = total_trials_displayed + 1;
+        y_positions(stim_type).end = total_trials_displayed + display_trials;
+        y_positions(stim_type).count = display_trials;
+        y_positions(stim_type).color = colors(stim_type, :);
+        y_positions(stim_type).label = frequency_results(stim_type).frequency_label;
+        total_trials_displayed = total_trials_displayed + display_trials;
+    else
+        y_positions(stim_type).count = 0;
+    end
+end
+
+% 绘制光栅图
+for stim_type = 1:6
+    if y_positions(stim_type).count > 0
+        trial_spike_times = frequency_results(stim_type).raster_data.trial_spike_times;
+        y_start = y_positions(stim_type).start;
+        color = y_positions(stim_type).color;
+        display_trials = y_positions(stim_type).count;
+        
+        for trial_idx = 1:display_trials
+            spike_times = trial_spike_times{trial_idx};
+            if ~isempty(spike_times)
+                y_pos = y_start + trial_idx - 1;
+                for s = 1:length(spike_times)
+                    line([spike_times(s), spike_times(s)], [y_pos-0.4, y_pos+0.4], 'Color', color, 'LineWidth', 2);
+                end
+            end
+        end
+        
+        % 组间分隔线
+        if stim_type < 6 && y_positions(stim_type+1).count > 0
+            plot([-params.Pre_Axis_Time, params.Post_Axis_Time], ...
+                [y_positions(stim_type).end + 0.5, y_positions(stim_type).end + 0.5], 'k-', 'LineWidth', 2);
+        end
+    end
+end
+
+y_max = total_trials_displayed + 0.5;
+
+plot([0, 0], [0, y_max], 'r--', 'LineWidth', 2);
+plot([0.5, 0.5], [0, y_max], 'r--', 'LineWidth', 2);
+
+fill([params.Response_Window(1), params.Response_Window(2), params.Response_Window(2), params.Response_Window(1)], ...
+    [0, 0, y_max, y_max], [1, 1, 0.8], 'FaceAlpha', 0.15, 'EdgeColor', 'none');
+
+xlabel('时间 (s)', 'FontSize', 12, 'FontWeight', 'bold');
+ylabel('刺激频率 (Hz)', 'FontSize', 12, 'FontWeight', 'bold');
+xlim([-params.Pre_Axis_Time, params.Post_Axis_Time + 0.5]);
+ylim([0, y_max]);
+grid on;
+
+yticks_pos = [];
+yticks_labels = {};
+for stim_type = 1:6
+    if y_positions(stim_type).count > 0
+        center_y = (y_positions(stim_type).start + y_positions(stim_type).end) / 2;
+        yticks_pos = [yticks_pos, center_y];
+        yticks_labels{end+1} = y_positions(stim_type).label;
+    end
+end
+set(gca, 'YTick', yticks_pos);
+set(gca, 'YTickLabel', yticks_labels);
+
+title('六种刺激类型叠加光栅图', 'FontSize', 14, 'FontWeight', 'bold');

@@ -1,0 +1,65 @@
+close all; clear; clc;
+
+%% 
+script_dir = 'E:\Github\Fiber_analysis\';
+cd(script_dir);
+addpath(script_dir);
+data_path = 'E:\Github\Fiber_analysis\';
+
+%% 
+y_axis_min = -0.03;           
+y_axis_max = 0.11;           
+
+%% 
+file_list = { 'Fiber_example.mat' };
+
+%% 
+fig = figure('Name', 'Mean Curves', 'NumberTitle', 'off');
+hold on;
+
+h_main = [];
+colors = lines(length(file_list));
+legend_names = erase(file_list, '.mat');
+
+for i = 1:length(file_list)
+    
+    data = load(fullfile(data_path, file_list{i}));
+    
+    x = (1:length(data.mean_all)) / data.GuangXian_rate;
+    pre_sample = round(data.Pre_time * data.GuangXian_rate);
+    
+    
+    baseline_mean = mean(data.mean_all(1:pre_sample));
+    trace = data.mean_all - baseline_mean;
+    sem = data.sem_all;
+    
+    fill([x, fliplr(x)], [trace+sem, fliplr(trace-sem)], ...
+         colors(i,:), 'FaceAlpha', 0.2, 'EdgeColor', 'none', 'HandleVisibility', 'off');
+    
+   
+    h = plot(x, trace, 'Color', colors(i,:), 'LineWidth', 2);
+    h_main(end+1) = h;
+end
+
+xlabel('Time (s)');
+ylabel('\DeltaF/F ');
+grid on; box on;
+
+ 
+stim_onset_time = pre_sample / data.GuangXian_rate;
+line([stim_onset_time stim_onset_time], ylim, 'Color', 'k', 'LineStyle', '--', 'LineWidth', 1.5);
+text(stim_onset_time, max(ylim) * 0.95, 'Stim Onset', ...
+     'HorizontalAlignment', 'center', ...
+     'VerticalAlignment', 'top', ...
+     'Color', 'k', ...
+     'FontSize', 10, ...
+     'FontWeight', 'bold');
+
+
+legend(h_main, legend_names, 'Interpreter', 'none', 'Location', 'best');
+ 
+ylim([y_axis_min, y_axis_max]);
+hold off;
+
+
+
