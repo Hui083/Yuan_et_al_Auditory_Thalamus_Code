@@ -1,3 +1,4 @@
+% This code is compatible with GNU Octave.
 clear all
 close all
 
@@ -13,7 +14,7 @@ y_limits = [-20, 120];
 %% Figure 1: 
 figure(1)
 set(gcf, 'Position', [100, 100, 1400, 900])
-set(gcf, 'Name', '´Ì¼¤ÀàĞÍ1-3£¨-0.5s to 1s£©')
+set(gcf, 'Name', 'åˆºæ¿€ç±»å‹1-3ï¼ˆ-0.5s to 1sï¼‰')
 
 for stim_type = 1:3
     subplot(1, 3, stim_type);
@@ -37,22 +38,22 @@ for stim_type = 1:3
     
     yticks([]); 
     
-    % === Ìí¼Ó´Ì¼¤¿ªÊ¼ (0s) ºÍ 0.5s µÄºìÉ«ĞéÏß ===
+    % === æ·»åŠ åˆºæ¿€å¼€å§‹ (0s) å’Œ 0.5s çš„çº¢è‰²è™šçº¿ ===
     line([0 0], y_limits, 'Color', 'red', 'LineStyle', '--', 'LineWidth', 1.5);
     line([0.5 0.5], y_limits, 'Color', 'red', 'LineStyle', '--', 'LineWidth', 1.5);
     
     text(0.02, y_limits(2)*0.95, '0s', 'Color', 'red', 'FontSize', 9, 'FontWeight', 'bold');
     text(0.52, y_limits(2)*0.95, '0.5s', 'Color', 'red', 'FontSize', 9, 'FontWeight', 'bold');
     
-    title(sprintf('%s (%d trials)\nºìÉ«£ºÇğÄÔÍ¨µÀ', fig_data.stim(stim_type).label, fig_data.stim(stim_type).trials))
-    xlabel('Ê±¼ä (s)', 'FontSize', 10, 'FontWeight', 'bold')
+    title(sprintf('%s (%d trials)\nçº¢è‰²ï¼šä¸˜è„‘é€šé“', fig_data.stim(stim_type).label, fig_data.stim(stim_type).trials))
+    xlabel('æ—¶é—´ (s)', 'FontSize', 10, 'FontWeight', 'bold')
     ylabel('LFP channels (30)', 'FontSize', 11, 'FontWeight', 'bold')
 end
 
 %% Figure 2: 
 figure(2)
 set(gcf, 'Position', [100, 100, 1400, 900])
-set(gcf, 'Name', '´Ì¼¤ÀàĞÍ4-6£¨-0.5s to 1s£©')
+set(gcf, 'Name', 'åˆºæ¿€ç±»å‹4-6ï¼ˆ-0.5s to 1sï¼‰')
 
 for stim_type = 4:6
     subplot(1, 3, stim_type-3);
@@ -75,14 +76,14 @@ for stim_type = 4:6
     ylim(y_limits) 
     yticks([]); 
     
-    % === Ìí¼Ó´Ì¼¤¿ªÊ¼ (0s) ºÍ 0.5s µÄºìÉ«ĞéÏß ===
+    % === æ·»åŠ åˆºæ¿€å¼€å§‹ (0s) å’Œ 0.5s çš„çº¢è‰²è™šçº¿ ===
     line([0 0], y_limits, 'Color', 'red', 'LineStyle', '--', 'LineWidth', 1.5);
     line([0.5 0.5], y_limits, 'Color', 'red', 'LineStyle', '--', 'LineWidth', 1.5);
     
     text(0.02, y_limits(2)*0.95, '0s', 'Color', 'red', 'FontSize', 9, 'FontWeight', 'bold');
     text(0.52, y_limits(2)*0.95, '0.5s', 'Color', 'red', 'FontSize', 9, 'FontWeight', 'bold');
     
-    title(sprintf('%s (%d trials)\nºìÉ«£ºÇğÄÔÍ¨µÀ', fig_data.stim(stim_type).label, fig_data.stim(stim_type).trials))
-    xlabel('Ê±¼ä (s)', 'FontSize', 10, 'FontWeight', 'bold')
+    title(sprintf('%s (%d trials)\nçº¢è‰²ï¼šä¸˜è„‘é€šé“', fig_data.stim(stim_type).label, fig_data.stim(stim_type).trials))
+    xlabel('æ—¶é—´ (s)', 'FontSize', 10, 'FontWeight', 'bold')
     ylabel('LFP channels', 'FontSize', 11, 'FontWeight', 'bold')
 end
